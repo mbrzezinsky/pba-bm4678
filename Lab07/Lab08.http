@@ -1,0 +1,25 @@
+###
+POST http://localhost:8080/api/aes/encData
+Authorization: Basic bm46478 123456
+Content-Type: application/json
+
+{
+  "test": "1",
+  "test2": "2",
+  "test3": "3"
+}
+
+> {%
+    client.global.set("payload", response.body.payload);
+    client.global.set("key", response.body.key);
+%}
+
+###
+POST http://localhost:8080/api/aes/decData
+Authorization: Basic bm46478 123456
+Content-Type: application/json
+
+{
+  "payload": "{{payload}}",
+  "key": "{{key}}"
+}
