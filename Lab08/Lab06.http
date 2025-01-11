@@ -1,0 +1,105 @@
+###
+POST http://localhost:8080/api/signature/generate-hmac
+Authorization: Basic bm46478 123456
+Content-Type: application/json
+
+{
+  "requestHeader": {
+    "requestId": "123e4567-e89b-12d3-a456-426614174000",
+    "sendDate": "2024-11-24T15:28:35.125-0121"
+  },
+  "user": {
+    "name": "John",
+    "surname": "Doe",
+    "age": 30,
+    "personalId": "12345678901",
+    "citizenship": "PL",
+    "email": "john.doe@example.com"
+  }
+}
+
+### Create User with HMAC Signature
+GET http://localhost:8080/api/users
+Authorization: Basic bm46478 123456
+Content-Type: application/json
+
+### Create User with HMAC Signature
+POST http://localhost:8080/api/users
+Authorization: Basic bm46478 123456
+Content-Type: application/json
+X-HMAC-SIGNATURE: S4vOXG8Uceg79f5mkQOZvln2Obd54rBSgGCG1f0L6xo=
+
+{
+  "requestHeader": {
+    "requestId": "123e4567-e89b-12d3-a456-426614174000",
+    "sendDate": "2024-11-24T15:28:35.125-0121"
+  },
+  "user": {
+    "name": "John",
+    "surname": "Doe",
+    "age": 30,
+    "personalId": "12345678901",
+    "citizenship": "PL",
+    "email": "john.doe@example.com"
+  }
+}
+
+> {%
+    client.global.set("userId", response.body.user.id);
+%}
+
+### Get auth token
+POST https://pba-auth-server.herokuapp.com/oauth/token
+Authorization: Basic pba_user 123456
+Content-Type: application/x-www-form-urlencoded
+
+grant_type = client_credentials
+
+> {%
+    client.global.set("access_token", response.body.access_token);
+%}
+
+###
+POST http://localhost:8080/api/signature/generate-jwts
+Authorization: Basic bm46478 123456
+Content-Type: application/json
+
+{
+  "requestHeader": {
+    "requestId": "123e4567-e89b-12d3-a456-426614174000",
+    "sendDate": "2024-11-24T15:28:35.125-0121"
+  },
+  "user": {
+    "name": "Oeo",
+    "surname": "Poe",
+    "age": 46,
+    "personalId": "12345678901",
+    "citizenship": "PL",
+    "email": "john.doe@example.com"
+  }
+}
+
+> {%
+    client.global.set("jwts_signature", response.body);
+%}
+
+### Update user with JWTS-SIGNATURE
+PUT http://127.0.0.1:8080/api/users/{{userId}}
+X-JWS-SIGNATURE: {{jwts_signature}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "requestHeader": {
+    "requestId": "123e4567-e89b-12d3-a456-426614174000",
+    "sendDate": "2024-11-24T15:28:35.125-0121"
+  },
+  "user": {
+    "name": "Oeo",
+    "surname": "Poe",
+    "age": 46,
+    "personalId": "12345678901",
+    "citizenship": "PL",
+    "email": "john.doe@example.com"
+  }
+}
