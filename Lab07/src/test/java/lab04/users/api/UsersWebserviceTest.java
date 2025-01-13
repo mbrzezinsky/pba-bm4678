@@ -79,12 +79,10 @@ class UsersWebserviceTest
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createRequest));
 
-        // when
         MvcResult result = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // then
         UserResponse response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 UserResponse.class
@@ -101,7 +99,6 @@ class UsersWebserviceTest
     @Test
     void shouldGetUserById() throws Exception
     {
-        // given
         RequestHeader requestHeader = new RequestHeader(
                 UUID.randomUUID(),
                 OffsetDateTime.now()
@@ -113,7 +110,6 @@ class UsersWebserviceTest
                 "12345678910",
                 User.CitizenshipEnum.PL
         );
-
 
         CreateRequest createRequest = new CreateRequest(requestHeader, user);
 
@@ -137,12 +133,10 @@ class UsersWebserviceTest
                         "sub", "bm46478"
                 ))));
 
-        // when
         MvcResult getUserResult = mockMvc.perform(getUserByIdRequest)
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // then
         UserResponse getUserResponse = objectMapper.readValue(
                 getUserResult.getResponse().getContentAsString(),
                 UserResponse.class
@@ -159,7 +153,6 @@ class UsersWebserviceTest
     @Test
     void shouldUpdateUser() throws Exception
     {
-        // given
         CreateRequest createRequest = new CreateRequest(
                 new RequestHeader(
                         UUID.randomUUID(),
@@ -214,7 +207,6 @@ class UsersWebserviceTest
         mockMvc.perform(updateUserById)
                 .andExpect(status().isOk());
 
-        // when
         MockHttpServletRequestBuilder getUserByIdRequest = get("/api/users/{id}", userSavedResponse.getUser().getId())
                 .with(jwt().authorities(new OAuth2UserAuthority("SCOPE_pba_resource", Map.of(
                         "sub", "bm4678"
@@ -224,7 +216,6 @@ class UsersWebserviceTest
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // then
         UserResponse getUserResponse = objectMapper.readValue(
                 getUserResult.getResponse().getContentAsString(),
                 UserResponse.class
@@ -245,7 +236,6 @@ class UsersWebserviceTest
     @WithMockUser(username = "bm46478", roles = "USER")
     void shouldDeleteUser() throws Exception
     {
-        // given
         RequestHeader requestHeader = new RequestHeader(
                 UUID.randomUUID(),
                 OffsetDateTime.now()
@@ -279,10 +269,8 @@ class UsersWebserviceTest
                         "sub", "bm46478"
                 ))));
 
-        // when
         mockMvc.perform(deleteUserById).andExpect(status().isNoContent());
 
-        // then
         MockHttpServletRequestBuilder getUserById = delete("/api/users/{id}", createdUser.getUser().getId())
                 .with(jwt().authorities(new OAuth2UserAuthority("SCOPE_pba_resource", Map.of(
                         "sub", "bm46478"
